@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   database:
     image: mariadb
     container_name: ${NAME}_db
@@ -33,24 +32,23 @@ services:
       - traefik.http.routers.pma_${NAME}.tls=true
       - traefik.http.routers.pma_${NAME}.tls.certresolver=myresolver
     volumes:
-        - /sessions
+      - /sessions
     networks:
-        - web      
-        - lan
+      - web      
+      - lan
 
   app:
     image: bitnami/laravel:latest
     container_name: ${NAME}
     networks:
-        - lan
-        - web
+      - lan
+      - web
     labels:
       - traefik.enable=true
       - traefik.http.routers.${NAME}.entryPoints=websecure 
       - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
       - traefik.http.routers.${NAME}.tls=true  
       - traefik.http.routers.${NAME}.tls.certresolver=myresolver
-          
     restart: always
     environment:
       LARAVEL_DATABASE_HOST: ${NAME}_db
@@ -59,6 +57,26 @@ services:
       LARAVEL_DATABASE_PASSWORD: "${MYSQL_PASSWORD}"
     volumes:
       - ./src:/app 
+
+  olivetin:
+    image: olivetin/olivetin:latest
+    container_name: ${NAME}_olivetin
+    restart: unless-stopped
+    environment:
+      OLIVETIN_PORT: 80
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.olivetin_${NAME}.entrypoints=websecure
+      - traefik.http.routers.olivetin_${NAME}.rule=Host(`${NAME}.jrcan.dev`) && PathPrefix(`/olivetin/`)
+      - traefik.http.middlewares.olivetinpathstrip_${NAME}.stripprefix.prefixes=/olivetin
+      - traefik.http.routers.olivetin_${NAME}.middlewares=olivetinpathstrip_${NAME}@docker
+      - traefik.http.routers.olivetin_${NAME}.tls=true
+      - traefik.http.routers.olivetin_${NAME}.tls.certresolver=myresolver
+    ports:
+      - "8000:80"
+    networks:
+      - web
+      - lan
 
 volumes:
   db:
@@ -69,4 +87,3 @@ networks:
   lan:
     external: false
     name: lan_${NAME}
-  
