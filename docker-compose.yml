@@ -60,7 +60,7 @@ services:
       - ./src:/app 
 
   olivetin:
-    image: olivetin/olivetin:latest
+    image: jamesread/olivetin
     container_name: ${NAME}_olivetin
     restart: unless-stopped
     environment:
@@ -88,7 +88,3 @@ networks:
   lan:
     external: false
     name: lan_${NAME}
-<<<<<<< HEAD
-=======
-  
->>>>>>> e075d19d2255e3e5728bba31cc529924f34aad20
