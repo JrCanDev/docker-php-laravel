@@ -49,6 +49,7 @@ services:
       - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
       - traefik.http.routers.${NAME}.tls=true  
       - traefik.http.routers.${NAME}.tls.certresolver=myresolver
+      - traefik.http.services.${NAME}.loadbalancer.server.port=8000  
     restart: always
     environment:
       LARAVEL_DATABASE_HOST: ${NAME}_db
@@ -87,3 +88,7 @@ networks:
   lan:
     external: false
     name: lan_${NAME}
+<<<<<<< HEAD
+=======
+  
+>>>>>>> e075d19d2255e3e5728bba31cc529924f34aad20
